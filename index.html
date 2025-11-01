@@ -3,287 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人作品集 | 哈基米/凉城孤岛</title>
+    <title>山河远阔 - 风景分享平台</title>
+    <!-- 引入Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <script>
-        // 配置Tailwind自定义主题
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3B82F6',
-                        secondary: '#10B981',
-                        dark: '#1F2937',
-                        light: '#F9FAFB'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .text-shadow {
-                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            }
-            .hover-lift {
-                transition: transform 0.3s ease;
-            }
-            .hover-lift:hover {
-                transform: translateY(-5px);
-            }
-        }
+    <!-- 引入Font Awesome图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 自定义样式 -->
+    <style>
+        html { scroll-behavior: smooth; }
+        /* 卡片hover效果 */
+        .scenery-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .scenery-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        /* 图片渐变遮罩 */
+        .img-overlay { background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%); }
+        /* 弹窗动画 */
+        .modal-enter { animation: fadeIn 0.3s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
-<body class="bg-light text-dark antialiased">
+<body class="bg-gray-50 font-sans text-gray-800">
     <!-- 导航栏 -->
-    <nav id="navbar" class="fixed w-full bg-white/90 backdrop-blur-sm shadow-sm z-50 transition-all duration-300">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="#" class="text-2xl font-bold text-primary">Port<span class="text-secondary">folio</span></a>
-            <!-- 桌面端导航 -->
-            <div class="hidden md:flex space-x-8">
-                <a href="#home" class="font-medium hover:text-primary transition-colors">首页</a>
-                <a href="#projects" class="font-medium hover:text-primary transition-colors">项目</a>
-                <a href="#about" class="font-medium hover:text-primary transition-colors">关于我</a>
-                <a href="#contact" class="font-medium hover:text-primary transition-colors">联系</a>
+    <nav class="fixed w-full top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm">
+        <div class="container mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-emerald-600 flex items-center mb-3 md:mb-0">
+                <<i class="fas fa-mountain-sun mr-2"></</i>山河远阔
+            </a>
+            <!-- 搜索框 -->
+            <div class="relative w-full md:w-96 mb-3 md:mb-0">
+                <input type="text" id="searchInput" placeholder="搜索风景关键词（如：海边、雪山）" 
+                       class="w-full px-4 py-2 pl-10 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <<i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></</i>
             </div>
-            <!-- 移动端菜单按钮 -->
-            <button id="menuBtn" class="md:hidden text-dark text-xl">
-                <<i class="fa fa-bars"></</i>
-            </button>
-        </div>
-        <!-- 移动端导航菜单 -->
-        <div id="mobileMenu" class="md:hidden hidden bg-white shadow-lg absolute w-full">
-            <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
-                <a href="#home" class="font-medium hover:text-primary transition-colors py-2">首页</a>
-                <a href="#projects" class="font-medium hover:text-primary transition-colors py-2">项目</a>
-                <a href="#about" class="font-medium hover:text-primary transition-colors py-2">关于我</a>
-                <a href="#contact" class="font-medium hover:text-primary transition-colors py-2">联系</a>
+            <!-- 分类筛选 -->
+            <div class="flex flex-wrap justify-center gap-2">
+                <button class="filter-btn px-4 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition-colors" data-category="all">全部</button>
+                <button class="filter-btn px-4 py-2 rounded-full bg-white text-gray-700 hover:bg-gray-100 transition-colors" data-category="mountain">雪山</button>
+                <button class="filter-btn px-4 py-2 rounded-full bg-white text-gray-700 hover:bg-gray-100 transition-colors" data-category="sea">海边</button>
+                <button class="filter-btn px-4 py-2 rounded-full bg-white text-gray-700 hover:bg-gray-100 transition-colors" data-category="forest">森林</button>
+                <button class="filter-btn px-4 py-2 rounded-full bg-white text-gray-700 hover:bg-gray-100 transition-colors" data-category="city">城市</button>
             </div>
         </div>
     </nav>
 
     <!-- 英雄区 -->
-    <section id="home" class="pt-32 pb-20 md:pt-40 md:pb-28 bg-gradient-to-b from-white to-blue-50">
-        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center gap-12">
-            <div class="md:w-1/2 space-y-6">
-                <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold leading-tight text-shadow">
-                    嗨，我是 <span class="text-primary">设计师</span><br>
-                    专注于你
-                </h1>
-                <p class="text-lg md:text-xl text-gray-600">
-                    打造有温度的人生，融合美学与功能，让每一次交互都充满惊喜
-                </p>
-                <div class="flex flex-wrap gap-4">
-                    <a href="#projects" class="px-8 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors shadow-md">
-                        查看作品
-                    </a>
-                    <a href="#contact" class="px-8 py-3 bg-white text-primary border border-primary rounded-lg font-medium hover:bg-gray-50 transition-colors shadow-sm">
-                        联系我
-                    </a>
-                </div>
-                <div class="flex space-x-6 text-xl">
-                    <a href="#" class="text-gray-600 hover:text-primary transition-colors"><<i class="fa fa-github"></</i></a>
-                    <a href="#" class="text-gray-600 hover:text-primary transition-colors"><<i class="fa fa-behance"></</i></a>
-                    <a href="#" class="text-gray-600 hover:text-primary transition-colors"><<i class="fa fa-dribbble"></</i></a>
-                    <a href="#" class="text-gray-600 hover:text-primary transition-colors"><<i class="fa fa-linkedin"></</i></a>
-                </div>
-            </div>
-            <div class="md:w-1/2">
-                <img src="https://picsum.photos/id/1005/600/400" alt="设计师形象" class="rounded-2xl shadow-xl hover-lift w-full object-cover h-[300px] md:h-[400px]">
-            </div>
+    <section class="pt-32 pb-20 bg-cover bg-center" style="background-image: url('https://picsum.photos/id/1036/1920/1080')">
+        <div class="container mx-auto px-4 text-center text-white">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 drop-shadow-lg">收藏世间美好风景</h1>
+            <p class="text-xl md:text-2xl max-w-3xl mx-auto mb-10 drop-shadow-md">每一次出发，都是与美景的相遇；每一张照片，都是时光的纪念</p>
+            <a href="#scenery-list" class="inline-block bg-emerald-600 text-white px-8 py-3 rounded-full hover:bg-emerald-700 transition-colors shadow-lg hover:shadow-xl">
+                浏览风景 <<i class="fas fa-arrow-down ml-2"></</i>
+            </a>
         </div>
     </section>
 
-    <!-- 项目展示区 -->
-    <section id="projects" class="py-20 bg-white">
+    <!-- 风景列表 -->
+    <section id="scenery-list" class="py-20 bg-white">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">精选项目</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">每一个班级大事都是张少博的职责</p>
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">精选风景</h2>
+                <div class="w-20 h-1 bg-emerald-600 mx-auto"></div>
+                <p class="text-gray-600 mt-4">来自世界各地的治愈系风景，治愈你的疲惫</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- 项目1 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden hover-lift">
-                    <img src="https://picsum.photos/id/1015/600/400" alt="移动应用设计" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2">健康管理APP</h3>
-                        <p class="text-gray-600 mb-4">为用户提供个性化健康方案，包含饮食记录、运动追踪、数据可视化功能</p>
-                        <a href="#" class="text-primary font-medium flex items-center gap-2 hover:underline">
-                            查看详情 <<i class="fa fa-arrow-right"></</i>
-                        </a>
+
+            <!-- 风景卡片网格 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- 风景卡片1 - 雪山 -->
+                <div class="scenery-card bg-white rounded-xl overflow-hidden shadow-md" data-category="mountain" data-tags="雪山、冰川、高原">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="https://picsum.photos/id/15/800/600" alt="雪山风景" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                        <div class="img-overlay absolute bottom-0 left-0 w-full h-32"></div>
+                        <span class="absolute bottom-4 left-4 bg-emerald-600 text-white text-sm px-3 py-1 rounded-full">雪山</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-xl text-gray-900 mb-2">贡嘎雪山</h3>
+                        <p class="text-gray-600 text-sm mb-3">四川 · 甘孜 | 蜀山之王，日照金山绝美盛景</p>
+                        <button class="view-details w-full py-2 rounded-lg bg-gray-100 text-emerald-600 hover:bg-gray-200 transition-colors" 
+                                data-title="贡嘎雪山" 
+                                data-location="四川甘孜藏族自治州" 
+                                data-desc="贡嘎雪山海拔7556米，是大雪山的主峰。周围环绕着45座海拔6000米以上的山峰，被誉为“蜀山之王”。每到清晨或黄昏，阳光洒在雪山上，形成壮丽的“日照金山”景观，吸引着无数摄影爱好者和登山者前来探访。"
+                                data-img="https://picsum.photos/id/15/1200/800">
+                            查看详情 <<i class="fas fa-angle-right ml-1"></</i>
+                        </button>
                     </div>
                 </div>
-                <!-- 项目2 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden hover-lift">
-                    <img src="https://picsum.photos/id/1019/600/400" alt="网站设计" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2">电商平台重构</h3>
-                        <p class="text-gray-600 mb-4">优化用户购物流程，提升转化率，打造沉浸式电商体验</p>
-                        <a href="#" class="text-primary font-medium flex items-center gap-2 hover:underline">
-                            查看详情 <<i class="fa fa-arrow-right"></</i>
-                        </a>
+
+                <!-- 风景卡片2 - 海边 -->
+                <div class="scenery-card bg-white rounded-xl overflow-hidden shadow-md" data-category="sea" data-tags="海边、沙滩、日落">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="https://picsum.photos/id/1019/800/600" alt="海边风景" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                        <div class="img-overlay absolute bottom-0 left-0 w-full h-32"></div>
+                        <span class="absolute bottom-4 left-4 bg-blue-600 text-white text-sm px-3 py-1 rounded-full">海边</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-xl text-gray-900 mb-2">亚龙湾</h3>
+                        <p class="text-gray-600 text-sm mb-3">海南 · 三亚 | 天下第一湾，碧海蓝天银沙</p>
+                        <button class="view-details w-full py-2 rounded-lg bg-gray-100 text-blue-600 hover:bg-gray-200 transition-colors"
+                                data-title="亚龙湾"
+                                data-location="海南三亚市吉阳区"
+                                data-desc="亚龙湾拥有7公里长的月牙形海湾，沙质洁白细软，海水清澈见底，能见度可达7-9米。这里的海水湛蓝如宝石，沙滩平缓宽阔，是潜水、游泳、日光浴的绝佳去处。傍晚时分，夕阳西下，海面波光粼粼，景色美不胜收。"
+                                data-img="https://picsum.photos/id/1019/1200/800">
+                            查看详情 <<i class="fas fa-angle-right ml-1"></</i>
+                        </button>
                     </div>
                 </div>
-                <!-- 项目3 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden hover-lift">
-                    <img src="https://picsum.photos/id/1025/600/400" alt="品牌设计" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2">初创品牌视觉系统</h3>
-                        <p class="text-gray-600 mb-4">为科技初创公司打造全套品牌形象，包括LOGO、色彩系统、应用规范</p>
-                        <a href="#" class="text-primary font-medium flex items-center gap-2 hover:underline">
-                            查看详情 <<i class="fa fa-arrow-right"></</i>
-                        </a>
+
+                <!-- 风景卡片3 - 森林 -->
+                <div class="scenery-card bg-white rounded-xl overflow-hidden shadow-md" data-category="forest" data-tags="森林、溪流、绿植">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="https://picsum.photos/id/29/800/600" alt="森林风景" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                        <div class="img-overlay absolute bottom-0 left-0 w-full h-32"></div>
+                        <span class="absolute bottom-4 left-4 bg-green-600 text-white text-sm px-3 py-1 rounded-full">森林</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-xl text-gray-900 mb-2">神农架</h3>
+                        <p class="text-gray-600 text-sm mb-3">湖北 · 神农架 | 原始森林，天然氧吧</p>
+                        <button class="view-details w-full py-2 rounded-lg bg-gray-100 text-green-600 hover:bg-gray-200 transition-colors"
+                                data-title="神农架"
+                                data-location="湖北神农架林区"
+                                data-desc="神农架是中国内陆唯一保存完好的一片绿洲和世界中纬度地区唯一的一块绿色宝地。这里森林覆盖率高达91.1%，拥有丰富的动植物资源，是名副其实的“天然氧吧”。山间溪流潺潺，云雾缭绕，仿佛置身仙境，是避暑和生态旅游的胜地。"
+                                data-img="https://picsum.photos/id/29/1200/800">
+                            查看详情 <<i class="fas fa-angle-right ml-1"></</i>
+                        </button>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- 关于我 -->
-    <section id="about" class="py-20 bg-gray-50">
-        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center gap-12">
-            <div class="md:w-1/2">
-                <img src="https://picsum.photos/id/1074/600/800" alt="关于我" class="rounded-2xl shadow-xl hover-lift w-full object-cover h-[400px] md:h-[500px]">
-            </div>
-            <div class="md:w-1/2 space-y-6">
-                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold">关于我</h2>
-                <p class="text-gray-600 text-lg">
-                    5年数字产品设计经验，擅长UI/UX设计、交互设计、品牌视觉设计，曾服务于多家知名企业与初创公司。
-                </p>
-                <p class="text-gray-600 text-lg">
-                    我相信设计不仅是视觉的表达，更是解决问题的方式。注重用户体验细节，追求功能与美学的平衡，让产品既好用又好看。
-                </p>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="flex items-center gap-3">
-                        <<i class="fa fa-check-circle text-secondary text-xl"></</i>
-                        <span>UI/UX设计</span>
+                <!-- 风景卡片4 - 城市 -->
+                <div class="scenery-card bg-white rounded-xl overflow-hidden shadow-md" data-category="city" data-tags="城市、夜景、江景">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="https://picsum.photos/id/42/800/600" alt="城市风景" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                        <div class="img-overlay absolute bottom-0 left-0 w-full h-32"></div>
+                        <span class="absolute bottom-4 left-4 bg-purple-600 text-white text-sm px-3 py-1 rounded-full">城市</span>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <<i class="fa fa-check-circle text-secondary text-xl"></</i>
-                        <span>交互设计</span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <<i class="fa fa-check-circle text-secondary text-xl"></</i>
-                        <span>品牌设计</span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <<i class="fa fa-check-circle text-secondary text-xl"></</i>
-                        <span>原型开发</span>
+                    <div class="p-4">
+                        <h3 class="font-bold text-xl text-gray-900 mb-2">重庆洪崖洞</h3>
+                        <p class="text-gray-600 text-sm mb-3">重庆 · 渝中区 | 现实版千与千寻</p>
+                        <button class="view-details w-full py-2 rounded-lg bg-gray-100 text-purple-600 hover:bg-gray-200 transition-colors"
+                                data-title="重庆洪崖洞"
+                                data-location="重庆渝中区嘉陵江滨江路"
+                                data-desc="洪崖洞以最具巴渝传统建筑特色的吊脚楼为主体，依山而建，沿江而筑。夜晚时分，灯火辉煌，吊脚楼的轮廓在灯光的映衬下格外迷人，与嘉陵江的倒影交相辉映，被誉为“现实版千与千寻”。这里不仅是观赏夜景的绝佳地点，也是感受重庆独特地貌和民俗文化的好去处。"
+                                data-img="https://picsum.photos/id/42/1200/800">
+                            查看详情 <<i class="fas fa-angle-right ml-1"></</i>
+                        </button>
                     </div>
                 </div>
-                <a href="#" class="inline-block px-6 py-3 bg-secondary text-white rounded-lg font-medium hover:bg-secondary/90 transition-colors shadow-md">
-                    下载简历
-                </a>
-            </div>
-        </div>
-    </section>
 
-    <!-- 联系区 -->
-    <section id="contact" class="py-20 bg-white">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">联系我</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">有项目合作、咨询或交流需求？随时联系我，期待与你共创精彩</p>
-            </div>
-            <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 md:p-10">
-                <form class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="name" class="block text-gray-700 font-medium mb-2">姓名</label>
-                            <input type="text" id="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="请输入你的姓名">
-                        </div>
-                        <div>
-                            <label for="email" class="block text-gray-700 font-medium mb-2">邮箱</label>
-                            <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="请输入你的邮箱">
-                        </div>
+                <!-- 风景卡片5 - 雪山 -->
+                <div class="scenery-card bg-white rounded-xl overflow-hidden shadow-md" data-category="mountain" data-tags="雪山、湖泊、草原">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="https://picsum.photos/id/28/800/600" alt="雪山湖泊" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                        <div class="img-overlay absolute bottom-0 left-0 w-full h-32"></div>
+                        <span class="absolute bottom-4 left-4 bg-emerald-600 text-white text-sm px-3 py-1 rounded-full">雪山</span>
                     </div>
-                    <div>
-                        <label for="subject" class="block text-gray-700 font-medium mb-2">主题</label>
-                        <input type="text" id="subject" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="请输入联系主题">
+                    <div class="p-4">
+                        <h3 class="font-bold text-xl text-gray-900 mb-2">纳木错</h3>
+                        <p class="text-gray-600 text-sm mb-3">西藏 · 当雄 | 天湖纳木错，圣湖秘境</p>
+                        <button class="view-details w-full py-2 rounded-lg bg-gray-100 text-emerald-600 hover:bg-gray-200 transition-colors"
+                                data-title="纳木错"
+                                data-location="西藏自治区拉萨市当雄县和班戈县之间"
+                                data-desc="纳木错是西藏三大圣湖之一，海拔4718米，是中国第二大咸水湖。湖泊周围是广阔的藏北草原，远处是连绵的念青唐古拉山脉，雪山、湖泊、草原相映成趣，景色壮美。这里的湖水湛蓝如镜，倒映着蓝天白云和雪山，神圣而纯净，是藏族同胞心中的圣地。"
+                                data-img="https://picsum.photos/id/28/1200/800">
+                            查看详情 <<i class="fas fa-angle-right ml-1"></</i>
+                        </button>
                     </div>
-                    <div>
-                        <label for="message" class="block text-gray-700 font-medium mb-2">留言</label>
-                        <textarea id="message" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="请输入你的留言内容"></textarea>
-                    </div>
-                    <button type="submit" class="w-full px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors shadow-md">
-                        发送消息
-                    </button>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <!-- 页脚 -->
-    <footer class="bg-dark text-white py-12">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-                <div class="text-center md:text-left">
-                    <a href="#" class="text-2xl font-bold text-white">Port<span class="text-secondary">folio</span></a>
-                    <p class="text-gray-400 mt-2">创意无限，体验至上</p>
                 </div>
-                <div class="flex space-x-6 text-xl">
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><<i class="fa fa-github"></</i></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><<i class="fa fa-behance"></</i></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><<i class="fa fa-dribbble"></</i></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><<i class="fa fa-linkedin"></</i></a>
-                </div>
-            </div>
-            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2024 个人作品集. 保留所有权利.</p>
-            </div>
-        </div>
-    </footer>
 
-    <!-- JavaScript -->
-    <script>
-        // 移动端菜单切换
-        const menuBtn = document.getElementById('menuBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
-        
-        menuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-            menuBtn.innerHTML = mobileMenu.classList.contains('hidden') 
-                ? '<<i class="fa fa-bars"></</i>' 
-                : '<<i class="fa fa-times"></</i>';
-        });
-
-        // 导航栏滚动效果
-        const navbar = document.getElementById('navbar');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('py-2', 'shadow');
-                navbar.classList.remove('py-3');
-            } else {
-                navbar.classList.add('py-3');
-                navbar.classList.remove('py-2', 'shadow');
-            }
-        });
-
-        // 平滑滚动
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href');
-                const targetElement = document.querySelector(targetId);
-                
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                    
-                    // 关闭移动端菜单
-                    if (!mobileMenu.classList.contains('hidden')) {
-                        mobileMenu.classList.add('hidden');
-                        menuBtn.innerHTML = '<<i class="fa fa-bars"></</i>';
-                    }
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+                <!-- 风景卡片6 - 海边 -->
+                <div class="scenery-card bg-white rounded-xl overflow-hidden shadow-md" data-category="sea" data-tags="海边、岛屿、日出">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="https://picsum.photos/id/1039/800/600" alt="海岛风景" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                        <div class="img-overlay absolute bottom-0 left-0 w-full h-32"></div>
+                        <span class="absolute bottom-4 left-4 bg-blue-600 text-white text-sm px-3 py-1 rounded-full">海边</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-xl text-gray-900 mb-2">东极岛</h3>
+                        <p class="text-gray-600 text-sm mb-3">浙江 · 舟山 | 中国最东端的海岛风情</p>
+                        <button class="view-details w-full py-2 rounded-lg bg-gray-100 text-blue-600 hover:bg-gray-200 transition-colors"
+                                data-title="东极岛"
+                                data-location="浙江省舟山市普陀区东极镇"
+                                data-desc="东极岛是中国最东端的岛屿群，由庙子湖、青浜岛、东福山等岛屿组成。这里远离大陆，海水清澈湛蓝，渔业资源丰富，保留着原始的海岛风貌。东福山岛是观看中国第一缕曙光的绝佳地点，清晨时分，太阳从海平面升起，金色的光芒洒满海面，景色震撼人心。"
+                                data-img="https://picsum.photos/id/1039/1200/800">
